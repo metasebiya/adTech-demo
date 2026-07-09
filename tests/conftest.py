@@ -7,7 +7,9 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from apps.api.main import app
 from core.auth.security import hash_password
-from core.domain.models import Base, User
+from core.domain.models import Base, Campaign, CampaignTarget, Placement, Publisher, User
+from core.domain.models.campaign import CampaignStatus, DeviceType
+from core.domain.models.inventory import PlacementStatus, PlacementType, PublisherStatus
 from core.domain.models.user import UserRole
 from infra.db.session import get_db_session
 
@@ -19,13 +21,73 @@ def session() -> Generator[Session, None, None]:
     Base.metadata.create_all(bind=engine)
 
     with TestingSessionLocal() as db:
+        seed_publisher = Publisher(
+            name="Seed Publisher",
+            status=PublisherStatus.active,
+        )
+        db.add(seed_publisher)
+        db.flush()
+
+        seed_placement = Placement(
+            publisher_id=seed_publisher.id,
+            name="Seed Placement",
+            placement_type=PlacementType.banner,
+            status=PlacementStatus.active,
+        )
+        db.add(seed_placement)
+        db.flush()
+
+        db.add_all(
+            [
+                User(
+                    email="admin@adtech-demo.local",
+                    full_name="Admin User",
+                    password_hash=hash_password("ChangeMe123!"),
+                    role=UserRole.admin,
+                    is_active=True,
+                ),
+                User(
+                    email="adops@adtech-demo.local",
+                    full_name="AdOps User",
+                    password_hash=hash_password("ChangeMe123!"),
+                    role=UserRole.adops,
+                    is_active=True,
+                ),
+                User(
+                    email="analyst@adtech-demo.local",
+                    full_name="Analyst User",
+                    password_hash=hash_password("ChangeMe123!"),
+                    role=UserRole.analyst,
+                    is_active=True,
+                ),
+                User(
+                    email="viewer@adtech-demo.local",
+                    full_name="Viewer User",
+                    password_hash=hash_password("ChangeMe123!"),
+                    role=UserRole.viewer,
+                    is_active=True,
+                ),
+            ]
+        )
+        db.flush()
+        admin_user = db.query(User).filter(User.email == "admin@adtech-demo.local").one()
         db.add(
-            User(
-                email="admin@adtech-demo.local",
-                full_name="Admin User",
-                password_hash=hash_password("ChangeMe123!"),
-                role=UserRole.admin,
-                is_active=True,
+            Campaign(
+                name="Seed Campaign",
+                advertiser_name="Seed Advertiser",
+                status=CampaignStatus.active,
+                bid_cpm="2.50",
+                daily_budget="100.00",
+                remaining_budget="80.00",
+                frequency_cap=3,
+                created_by_user_id=admin_user.id,
+                targets=[
+                    CampaignTarget(
+                        country="US",
+                        device_type=DeviceType.desktop,
+                        placement_id=seed_placement.id,
+                    )
+                ],
             )
         )
         db.commit()

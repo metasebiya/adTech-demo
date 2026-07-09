@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 
+from apps.web.api_client import api_get
 from core.config import get_settings
 
 settings = get_settings()
@@ -33,6 +34,12 @@ def authenticate(email: str, password: str) -> tuple[bool, str | None]:
 if st.session_state.access_token:
     st.success(f"Signed in as {st.session_state.current_user['full_name']}")
     st.write(f"Role: `{st.session_state.current_user['role']}`")
+    me_response = api_get("/auth/me")
+    if me_response.status_code == 200:
+        st.caption("Backend session validated")
+    else:
+        st.warning("Stored session could not be validated against the backend.")
+    st.info("Use the sidebar to open the Publisher & Placement Manager and Campaign Manager pages.")
     if st.button("Log out", type="secondary"):
         st.session_state.access_token = None
         st.session_state.current_user = None
@@ -50,5 +57,5 @@ else:
 
 st.divider()
 st.markdown(
-    "This first slice only includes authentication. Dashboard, campaigns, placements, auctions, and analytics come next."
+    "Current demo slice: authentication, RBAC foundations, inventory management, and campaign CRUD."
 )
