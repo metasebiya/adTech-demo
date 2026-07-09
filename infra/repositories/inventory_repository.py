@@ -49,3 +49,6 @@ class PlacementRepository:
         if not placement_ids:
             return []
         return self.session.query(Placement).filter(Placement.id.in_(placement_ids)).all()
+
+    def get_by_id(self, placement_id: int) -> Placement | None:
+        return self.session.query(Placement).filter(Placement.id == placement_id).one_or_none()
