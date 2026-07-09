@@ -6,6 +6,7 @@ from apps.api.routes.auth import router as auth_router
 from apps.api.routes.auctions import router as auctions_router
 from apps.api.routes.bid_requests import router as bid_requests_router
 from apps.api.routes.campaigns import router as campaigns_router
+from apps.api.routes.copilot import router as copilot_router
 from apps.api.routes.events import router as events_router
 from apps.api.routes.health import router as health_router
 from apps.api.routes.metrics import router as metrics_router
@@ -32,6 +33,7 @@ app.include_router(bid_requests_router, prefix="/bid-requests", tags=["bid-reque
 app.include_router(auctions_router, prefix="/auctions", tags=["auctions"])
 app.include_router(events_router, prefix="/events", tags=["events"])
 app.include_router(metrics_router, prefix="/metrics", tags=["metrics"])
+app.include_router(copilot_router, prefix="/copilot", tags=["copilot"])
 app.include_router(campaigns_router, prefix="/campaigns", tags=["campaigns"])
 app.include_router(publishers_router, prefix="/publishers", tags=["publishers"])
 app.include_router(placements_router, prefix="/placements", tags=["placements"])

@@ -18,6 +18,7 @@ from core.domain.models import (
     User,
 )
 from core.domain.models.auction import CandidateStatus, DecisionStatus
+from core.domain.models import Base, Campaign, CampaignTarget, Placement, Publisher, User
 from core.domain.models.campaign import CampaignStatus, DeviceType
 from core.domain.models.inventory import PlacementStatus, PlacementType, PublisherStatus
 from core.domain.models.user import UserRole
@@ -148,6 +149,7 @@ def seed_demo_campaigns(session: Session) -> None:
             daily_budget=Decimal("500.00"),
             remaining_budget=Decimal("418.00"),
             frequency_cap=1,
+            frequency_cap=2,
             created_by_user_id=admin_user.id,
             targets=[
                 CampaignTarget(
