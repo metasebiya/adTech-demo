@@ -16,7 +16,7 @@ def test_admin_can_create_impression_event(client) -> None:
             "campaign_id": 1,
             "publisher_id": 1,
             "placement_id": 1,
-            "user_id": "fresh-user",
+            "user_id": "existing-user",
             "revenue": "2.15",
         },
     )

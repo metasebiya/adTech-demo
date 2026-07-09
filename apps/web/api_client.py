@@ -49,3 +49,11 @@ def require_login() -> dict[str, Any] | None:
         return current_user
     st.warning("Please sign in on the main login page first.")
     st.stop()
+
+
+def handle_json_error(response: requests.Response, fallback: str) -> str:
+    try:
+        payload = response.json()
+    except Exception:
+        return fallback
+    return payload.get("detail", fallback)
