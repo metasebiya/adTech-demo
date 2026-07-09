@@ -9,6 +9,7 @@ from apps.api.main import app
 from core.auth.security import hash_password
 from core.domain.models import AuctionCandidate, AuctionDecision, Base, BidRequest, Campaign, CampaignTarget, Placement, Publisher, User
 from core.domain.models.auction import CandidateStatus, DecisionStatus
+from core.domain.models import Base, Campaign, CampaignTarget, Placement, Publisher, User
 from core.domain.models.campaign import CampaignStatus, DeviceType
 from core.domain.models.inventory import PlacementStatus, PlacementType, PublisherStatus
 from core.domain.models.user import UserRole
@@ -115,6 +116,21 @@ def session() -> Generator[Session, None, None]:
                         eligibility_status=CandidateStatus.eligible,
                         rejection_reason=None,
                         score=seed_campaign.bid_cpm,
+        db.add(
+            Campaign(
+                name="Seed Campaign",
+                advertiser_name="Seed Advertiser",
+                status=CampaignStatus.active,
+                bid_cpm="2.50",
+                daily_budget="100.00",
+                remaining_budget="80.00",
+                frequency_cap=3,
+                created_by_user_id=admin_user.id,
+                targets=[
+                    CampaignTarget(
+                        country="US",
+                        device_type=DeviceType.desktop,
+                        placement_id=seed_placement.id,
                     )
                 ],
             )
