@@ -7,7 +7,20 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from apps.api.main import app
 from core.auth.security import hash_password
-from core.domain.models import AuctionCandidate, AuctionDecision, Base, BidRequest, Campaign, CampaignTarget, Placement, Publisher, User
+from core.domain.models import (
+    AuctionCandidate,
+    AuctionDecision,
+    Base,
+    BidRequest,
+    Campaign,
+    CampaignTarget,
+    ClickEvent,
+    ConversionEvent,
+    ImpressionEvent,
+    Placement,
+    Publisher,
+    User,
+)
 from core.domain.models.auction import CandidateStatus, DecisionStatus
 from core.domain.models.campaign import CampaignStatus, DeviceType
 from core.domain.models.inventory import PlacementStatus, PlacementType, PublisherStatus
@@ -118,6 +131,29 @@ def session() -> Generator[Session, None, None]:
                     )
                 ],
             )
+        )
+        db.flush()
+        seeded_decision = db.query(AuctionDecision).filter(AuctionDecision.bid_request_id == bid_request.id).one()
+        db.add_all(
+            [
+                ImpressionEvent(
+                    auction_decision_id=seeded_decision.id,
+                    campaign_id=seed_campaign.id,
+                    publisher_id=seed_publisher.id,
+                    placement_id=seed_placement.id,
+                    user_id="existing-user",
+                    revenue="1.25",
+                ),
+                ClickEvent(
+                    auction_decision_id=seeded_decision.id,
+                    campaign_id=seed_campaign.id,
+                ),
+                ConversionEvent(
+                    auction_decision_id=seeded_decision.id,
+                    campaign_id=seed_campaign.id,
+                    conversion_value="9.99",
+                ),
+            ]
         )
         db.commit()
         yield db

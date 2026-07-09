@@ -14,8 +14,9 @@ The project currently includes:
 - publisher and placement CRUD APIs
 - campaign CRUD with placement-based targeting
 - bid request simulation with eligibility checks and auction trace storage
+- impression, click, and conversion event ingestion plus event listing
 - Streamlit login page, inventory manager, and campaign manager
-- backend auth, inventory, campaign, and auction tests
+- backend auth, inventory, campaign, auction, and event tests
 - Docker-based local runtime
 - GitHub Actions CI for tests and image builds
 
