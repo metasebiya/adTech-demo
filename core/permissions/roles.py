@@ -1,10 +1,12 @@
 from core.domain.models.user import UserRole
 
+MANAGE_PUBLISHERS_AND_PLACEMENTS = "manage_publishers_and_placements"
+
 ROLE_PERMISSIONS: dict[UserRole, set[str]] = {
     UserRole.admin: {
         "manage_users",
         "manage_campaigns",
-        "manage_publishers",
+        MANAGE_PUBLISHERS_AND_PLACEMENTS,
         "run_bid_simulations",
         "log_events",
         "view_analytics",
@@ -12,7 +14,7 @@ ROLE_PERMISSIONS: dict[UserRole, set[str]] = {
     },
     UserRole.adops: {
         "manage_campaigns",
-        "manage_publishers",
+        MANAGE_PUBLISHERS_AND_PLACEMENTS,
         "run_bid_simulations",
         "log_events",
         "view_analytics",
