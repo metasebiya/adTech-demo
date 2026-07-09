@@ -15,12 +15,36 @@ The project currently includes:
 - campaign CRUD with placement-based targeting
 - bid request simulation with eligibility checks and auction trace storage
 - impression, click, and conversion event ingestion plus event listing
+- Polars-backed metrics endpoints for dashboard analytics
 - Streamlit login page, inventory manager, and campaign manager
-- backend auth, inventory, campaign, auction, and event tests
+- backend auth, inventory, campaign, auction, event, and metrics tests
 - Docker-based local runtime
 - GitHub Actions CI for tests and image builds
 
 ## Local Run
+
+### Python Environment
+
+Recommended local setup uses `uv` with a repo-local `.venv`.
+
+Create the environment:
+
+```bash
+uv python install 3.12
+uv venv --python 3.12 .venv
+```
+
+Activate it on PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Install dependencies:
+
+```bash
+uv pip install -r requirements.txt --python .venv/Scripts/python.exe
+```
 
 ### Option 1: Docker Compose
 
@@ -43,10 +67,10 @@ Default seeded demo users all use password `ChangeMe123!`:
 
 ### Option 2: Run Locally Without Containers
 
-Install dependencies:
+Install dependencies with the active virtual environment:
 
 ```bash
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 ```
 
 Start the API:
