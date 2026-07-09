@@ -73,6 +73,9 @@ Use the following implementation stack:
 - Plotly for charts
 - JWT authentication
 - passlib/bcrypt for password hashing
+- Docker for containerization
+- Docker Compose for local multi-service orchestration
+- GitHub Actions for CI/CD automation
 
 ## 5. Architecture Overview
 
@@ -503,8 +506,11 @@ This project will be developed using Codex in VS Code with spec-driven developme
 - Break work into small vertical slices.
 - Implement one module at a time.
 - Add tests for every service or endpoint slice.
+- Add or update CI/CD checks for every feature slice when build, runtime, or validation behavior changes.
 - Compare implementation back to this spec after each feature.
 - Prefer stable, demo-ready behavior over extra complexity.
+- Keep the project runnable locally through containers as the default demo path.
+- Keep delivery automation professional and reviewable, with branch-based workflow and repeatable checks.
 
 ### Preferred Build Order
 
@@ -520,6 +526,7 @@ This project will be developed using Codex in VS Code with spec-driven developme
 10. metrics aggregation
 11. dashboard pages
 12. copilot insight flow
+13. release-hardening and delivery polish
 
 ### Codex Task Pattern
 
@@ -528,11 +535,15 @@ Use prompts like:
 - "Read spec.md and implement only the auth models, auth routes, and JWT utilities."
 - "Read spec.md and implement campaign CRUD with SQLAlchemy models, Pydantic schemas, and FastAPI routes."
 - "Read spec.md and implement the bid request workflow and auction selection logic with tests."
+- "Read spec.md and update the CI/CD workflow and containers to support the latest feature slice."
 - "Compare the current implementation with spec.md and list missing requirements for the bid workflow."
 
 ## 13. Initial Folder Structure
 
 ```text
+.github/
+  workflows/
+
 apps/
   api/
     routes/
@@ -564,7 +575,51 @@ work/
 outputs/
 ```
 
-## 14. Seed Data Requirements
+## 14. Delivery Workflow
+
+### Branch Strategy
+
+- `main` is the stable integration branch.
+- Use feature branches for all implementation work.
+- Branch names should be descriptive, for example:
+  - `feature/rbac`
+  - `feature/inventory-crud`
+  - `feature/bid-simulator`
+  - `feature/metrics-dashboard`
+- Use focused commits with clear, professional messages.
+
+### Pull Request Expectations
+
+- Every feature branch should be merged through a pull request when a GitHub remote is available.
+- Pull requests should summarize:
+  - what changed
+  - why it changed
+  - how it was validated
+  - any remaining risks or follow-up work
+- Prefer small, reviewable PRs aligned to one vertical slice.
+
+### CI/CD Expectations
+
+- Every feature branch should trigger automated validation.
+- The baseline GitHub Actions workflow should:
+  - install dependencies
+  - run backend tests
+  - build backend and frontend containers
+- As new features are added, CI/CD should expand to include the relevant checks, such as:
+  - API tests
+  - service-layer tests
+  - linting or formatting checks if adopted
+  - container build validation
+  - smoke checks for key demo flows
+- A feature is not complete unless its required checks are represented in CI/CD.
+
+### Local Demo Runtime
+
+- The default local demo runtime should remain container-friendly.
+- Dockerfiles should exist for the backend and frontend.
+- Docker Compose should provide a simple local startup path for reviewers and interview demos.
+
+## 15. Seed Data Requirements
 
 Seed the demo with:
 
@@ -581,7 +636,7 @@ Ensure seed data supports:
 - one budget exhausted case
 - one frequency cap case
 
-## 15. Acceptance Criteria
+## 16. Acceptance Criteria
 
 The demo is considered ready when:
 
@@ -594,8 +649,11 @@ The demo is considered ready when:
 - impression, click, and conversion events can be recorded
 - dashboard metrics update correctly
 - the AI copilot can explain the auction result and summary metrics
+- CI checks pass for the implemented feature set
+- backend and frontend containers build successfully
+- the demo can be started locally through the documented container workflow
 
-## 16. Presentation Notes
+## 17. Presentation Notes
 
 When presenting the demo:
 
