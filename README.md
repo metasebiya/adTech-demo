@@ -13,8 +13,9 @@ The project currently includes:
 - RBAC enforcement for inventory management
 - publisher and placement CRUD APIs
 - campaign CRUD with placement-based targeting
+- bid request simulation with eligibility checks and auction trace storage
 - Streamlit login page, inventory manager, and campaign manager
-- backend auth, inventory, and campaign tests
+- backend auth, inventory, campaign, and auction tests
 - Docker-based local runtime
 - GitHub Actions CI for tests and image builds
 

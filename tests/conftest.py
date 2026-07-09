@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from apps.api.main import app
 from core.auth.security import hash_password
-from core.domain.models import Base, Campaign, CampaignTarget, Placement, Publisher, User
+from core.domain.models import AuctionCandidate, AuctionDecision, Base, BidRequest, Campaign, CampaignTarget, Placement, Publisher, User
+from core.domain.models.auction import CandidateStatus, DecisionStatus
 from core.domain.models.campaign import CampaignStatus, DeviceType
 from core.domain.models.inventory import PlacementStatus, PlacementType, PublisherStatus
 from core.domain.models.user import UserRole
@@ -79,13 +80,41 @@ def session() -> Generator[Session, None, None]:
                 bid_cpm="2.50",
                 daily_budget="100.00",
                 remaining_budget="80.00",
-                frequency_cap=3,
+                frequency_cap=1,
                 created_by_user_id=admin_user.id,
                 targets=[
                     CampaignTarget(
                         country="US",
                         device_type=DeviceType.desktop,
                         placement_id=seed_placement.id,
+                    )
+                ],
+            )
+        )
+        db.flush()
+        seed_campaign = db.query(Campaign).filter(Campaign.name == "Seed Campaign").one()
+        bid_request = BidRequest(
+            publisher_id=seed_publisher.id,
+            placement_id=seed_placement.id,
+            country="US",
+            device_type=DeviceType.desktop,
+            user_id="existing-user",
+        )
+        db.add(bid_request)
+        db.flush()
+        db.add(
+            AuctionDecision(
+                bid_request_id=bid_request.id,
+                winner_campaign_id=seed_campaign.id,
+                decision_status=DecisionStatus.win,
+                clearing_price=seed_campaign.bid_cpm,
+                decision_reason=seed_campaign.name,
+                candidates=[
+                    AuctionCandidate(
+                        campaign_id=seed_campaign.id,
+                        eligibility_status=CandidateStatus.eligible,
+                        rejection_reason=None,
+                        score=seed_campaign.bid_cpm,
                     )
                 ],
             )
