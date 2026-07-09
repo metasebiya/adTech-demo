@@ -1,18 +1,31 @@
 import streamlit as st
 
 from apps.web.api_client import api_get, handle_json_error, require_login
+from apps.web.ui import apply_page_style, render_hero, render_panel
 
 current_user = require_login()
-
-st.title("Event Explorer")
-st.caption("Browse impression, click, and conversion events with simple filters.")
-st.write(f"Signed in as `{current_user['full_name']}` with role `{current_user['role']}`")
+apply_page_style()
 
 campaigns_response = api_get("/campaigns")
 auctions_response = api_get("/auctions")
 publishers_response = api_get("/publishers")
 
 params: dict[str, int] = {}
+render_hero(
+    "Event Explorer",
+    "Browse impression, click, and conversion records to connect delivery behavior back to the auction decisions that produced it.",
+    "Delivery Signals",
+    [
+        ("Role", current_user["role"].upper()),
+        ("Auction Filters", "Enabled"),
+        ("Mode", "Read Exploration"),
+    ],
+)
+render_panel(
+    "Filter The Story",
+    "Narrow the dataset by campaign, auction, or publisher to demonstrate how post-auction engagement lines up with targeting and winning logic.",
+    eyebrow="Controls",
+)
 
 filter_col_1, filter_col_2, filter_col_3 = st.columns(3)
 
@@ -58,5 +71,5 @@ if events_response.status_code != 200:
     st.stop()
 
 events = events_response.json()
-st.subheader("Events")
+render_panel("Event Feed", "Chronological view of recorded impressions, clicks, and conversions for demo analysis.", eyebrow="Results")
 st.dataframe(events, use_container_width=True)
