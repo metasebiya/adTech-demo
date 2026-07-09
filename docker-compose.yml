@@ -1,0 +1,25 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: adtech-demo-api
+    environment:
+      ADTECH_JWT_SECRET_KEY: change-this-demo-secret
+      ADTECH_SQLITE_DB_PATH: /app/data/adtech_demo.db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: adtech-demo-web
+    depends_on:
+      - api
+    environment:
+      ADTECH_API_BASE_URL: http://api:8000
+    ports:
+      - "8501:8501"
