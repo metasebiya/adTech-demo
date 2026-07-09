@@ -3,7 +3,18 @@ from decimal import Decimal
 from sqlalchemy.orm import Session
 
 from core.auth.security import hash_password
-from core.domain.models import Base, Campaign, CampaignTarget, Placement, Publisher, User
+from core.domain.models import (
+    AuctionCandidate,
+    AuctionDecision,
+    Base,
+    BidRequest,
+    Campaign,
+    CampaignTarget,
+    Placement,
+    Publisher,
+    User,
+)
+from core.domain.models.auction import CandidateStatus, DecisionStatus
 from core.domain.models.campaign import CampaignStatus, DeviceType
 from core.domain.models.inventory import PlacementStatus, PlacementType, PublisherStatus
 from core.domain.models.user import UserRole
@@ -16,6 +27,7 @@ def initialize_database() -> None:
         seed_demo_users(session)
         seed_demo_inventory(session)
         seed_demo_campaigns(session)
+        seed_demo_auction_history(session)
 
 
 def seed_demo_users(session: Session) -> None:
@@ -130,7 +142,7 @@ def seed_demo_campaigns(session: Session) -> None:
             bid_cpm=Decimal("4.10"),
             daily_budget=Decimal("500.00"),
             remaining_budget=Decimal("420.00"),
-            frequency_cap=2,
+            frequency_cap=1,
             created_by_user_id=admin_user.id,
             targets=[
                 CampaignTarget(
@@ -193,4 +205,41 @@ def seed_demo_campaigns(session: Session) -> None:
         ),
     ]
     session.add_all(campaigns)
+    session.commit()
+
+
+def seed_demo_auction_history(session: Session) -> None:
+    if session.query(BidRequest).count() > 0:
+        return
+
+    sports_campaign = session.query(Campaign).filter(Campaign.name == "Sports Video Reach").one()
+    placement = session.query(Placement).filter(Placement.name == "Live Scores Video").one()
+    publisher_id = placement.publisher_id
+
+    bid_request = BidRequest(
+        publisher_id=publisher_id,
+        placement_id=placement.id,
+        country="KE",
+        device_type=DeviceType.mobile,
+        user_id="freq-cap-user",
+    )
+    session.add(bid_request)
+    session.flush()
+
+    decision = AuctionDecision(
+        bid_request_id=bid_request.id,
+        winner_campaign_id=sports_campaign.id,
+        decision_status=DecisionStatus.win,
+        clearing_price=sports_campaign.bid_cpm,
+        decision_reason=sports_campaign.name,
+        candidates=[
+            AuctionCandidate(
+                campaign_id=sports_campaign.id,
+                eligibility_status=CandidateStatus.eligible,
+                rejection_reason=None,
+                score=sports_campaign.bid_cpm,
+            )
+        ],
+    )
+    session.add(decision)
     session.commit()
