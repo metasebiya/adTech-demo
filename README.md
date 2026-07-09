@@ -88,8 +88,16 @@ streamlit run apps/web/app.py
 ## Test
 
 ```bash
-pytest -q
+.venv/Scripts/python.exe -m pytest -q
 ```
+
+For this Windows workspace, the most reliable repo-local validation path is:
+
+```powershell
+.\work\validate.ps1
+```
+
+If you are running through Codex, local Python execution may require approval because the sandbox can block spawning `.venv\Scripts\python.exe` even when the environment itself is healthy.
 
 ## CI
 
